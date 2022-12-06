@@ -12,8 +12,20 @@ func PlayTournament(filename string) int {
 	score := 0
 	for _, s := range lines {
 		game := parseGame(s)
-		finished_game := playGame(game)
-		score += finished_game.score()
+		finishedGame := playGame(game)
+		score += finishedGame.score()
+	}
+	return score
+}
+
+func PlayPlannedTournament(filename string) int {
+	lines := readFileLines(filename)
+	score := 0
+	for _, s := range lines {
+		plannedGame := parsePlannedGame(s)
+		playerHand := planHand(plannedGame)
+		finishedGame := finishedGame{game{plannedGame.opponent, playerHand}, plannedGame.outcome}
+		score += finishedGame.score()
 	}
 	return score
 }
@@ -35,13 +47,19 @@ const (
 )
 
 type game struct{ opponent, player hand }
+
+type plannedGame struct {
+	opponent hand
+	outcome  outcome
+}
+
 type finishedGame struct {
-	g game
-	o outcome
+	game    game
+	outcome outcome
 }
 
 func (g finishedGame) score() int {
-	return int(g.o)*3 + int(g.g.player) + 1
+	return int(g.outcome)*3 + int(g.game.player) + 1
 }
 
 func playGame(g game) finishedGame {
@@ -62,13 +80,27 @@ func playGame(g game) finishedGame {
 	return finishedGame{g, o}
 }
 
+func planHand(g plannedGame) hand {
+	if g.outcome == Loss && g.opponent == Rock {
+		return Scissors
+	} else if g.outcome == Win && g.opponent == Scissors {
+		return Rock
+	} else if g.outcome == Loss {
+		return g.opponent - 1
+	} else if g.outcome == Win {
+		return g.opponent + 1
+	} else {
+		return g.opponent
+	}
+}
+
 func parseGame(s string) game {
 	return game{parseOpponentHand(s[0]), parsePlayerHand(s[2])}
 }
 
-// func parseFinishedGame(s string) game {
-// 	return finishedGame{parseOpponentHand(s[0]), parseOutcome(s[2])}
-// }
+func parsePlannedGame(s string) plannedGame {
+	return plannedGame{parseOpponentHand(s[0]), parseOutcome(s[2])}
+}
 
 func parseOpponentHand(b byte) hand {
 	return parseHand(b, map[byte]hand{
