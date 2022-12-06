@@ -2,22 +2,28 @@ package day1
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
 	"sort"
 	"strconv"
 )
 
-func CountCalories(filename string) int {
+func CountCalories(filename string) (int, error) {
 	return CountCaloriesTopN(filename, 1)
 }
 
-func CountCaloriesTopN(filename string, n int) int {
+func CountCaloriesTopN(filename string, n int) (int, error) {
 	return maxCaloriesTopN(readInventories(filename), n)
 }
 
-func maxCaloriesTopN(inventories [][]int, n int) int {
-	caloriesByInventory := make([]int, 0, len(inventories))
+func maxCaloriesTopN(inventories [][]int, n int) (int, error) {
+	inventoriesSize := len(inventories)
+	if inventoriesSize < n {
+		return -1, errors.New("inventories size is larger than n")
+	}
+
+	caloriesByInventory := make([]int, 0, inventoriesSize)
 	for _, inventory := range inventories {
 		weight := 0
 		for _, item := range inventory {
@@ -34,7 +40,7 @@ func maxCaloriesTopN(inventories [][]int, n int) int {
 	for _, v := range caloriesByInventory[0:n] {
 		sum += v
 	}
-	return sum
+	return sum, nil
 }
 
 func readInventories(filename string) [][]int {

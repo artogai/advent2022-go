@@ -15,7 +15,11 @@ func TestCountCaloriesTop3(t *testing.T) {
 }
 
 func countCaloriesTest(expected int, filename string, n int, t *testing.T) {
-	got := CountCaloriesTopN(filename, n)
+	got, err := CountCaloriesTopN(filename, n)
+	if err != nil {
+		t.Error(err)
+	}
+
 	t.Logf("Expected=%d Got=%d", expected, got)
 	if got != expected {
 		t.Fail()
