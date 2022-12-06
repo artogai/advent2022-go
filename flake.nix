@@ -18,6 +18,7 @@
             go-tools
             gotools
             gopls
+            delve
             go-outline
             gocode
             gopkgs
