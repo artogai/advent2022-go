@@ -6,6 +6,10 @@ func TestCountCaloriesSample(t *testing.T) {
 	countCaloriesTest(15, "inventories_sample.txt", 1, t)
 }
 
+func TestCountCaloriesSampleTop2(t *testing.T) {
+	countCaloriesTest(22, "inventories_sample.txt", 2, t)
+}
+
 func TestCountCalories(t *testing.T) {
 	countCaloriesTest(69693, "inventories.txt", 1, t)
 }

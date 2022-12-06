@@ -20,7 +20,7 @@ func CountCaloriesTopN(filename string, n int) (int, error) {
 func maxCaloriesTopN(inventories [][]int, n int) (int, error) {
 	inventoriesSize := len(inventories)
 	if inventoriesSize < n {
-		return -1, errors.New("inventories size is larger than n")
+		return -1, errors.New("inventories count is less than n")
 	}
 
 	caloriesByInventory := make([]int, 0, inventoriesSize)
