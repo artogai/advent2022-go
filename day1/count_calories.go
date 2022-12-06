@@ -4,32 +4,44 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"sort"
 	"strconv"
 )
 
-func CountCalories(file string) int {
-	return maxCalories(readInventories(file))
+func CountCalories(filename string) int {
+	return CountCaloriesTopN(filename, 1)
 }
 
-func maxCalories(inventories [][]int) int {
-	max_weight := 0
+func CountCaloriesTopN(filename string, n int) int {
+	return maxCaloriesTopN(readInventories(filename), n)
+}
+
+func maxCaloriesTopN(inventories [][]int, n int) int {
+	caloriesByInventory := make([]int, 0, len(inventories))
 	for _, inventory := range inventories {
 		weight := 0
 		for _, item := range inventory {
 			weight += item
 		}
-		if weight > max_weight {
-			max_weight = weight
-		}
+		caloriesByInventory = append(caloriesByInventory, weight)
 	}
-	return max_weight
+
+	sort.Slice(caloriesByInventory, func(i, j int) bool {
+		return caloriesByInventory[i] > caloriesByInventory[j]
+	})
+
+	sum := 0
+	for _, v := range caloriesByInventory[0:n] {
+		sum += v
+	}
+	return sum
 }
 
-func readInventories(file string) [][]int {
+func readInventories(filename string) [][]int {
 	inventories := make([][]int, 0)
 	inventory := make([]int, 0)
 
-	f, err := os.Open(file)
+	f, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
