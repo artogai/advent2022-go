@@ -8,21 +8,45 @@ import (
 	"github.com/samber/lo"
 )
 
-func CountMissplacedItemsScore(filename string) int {
+func CalcMissplacedItemsScore(filename string) int {
 	score := 0
 	for _, rucksack := range readRucksacks(filename) {
-		score += rucksack.missplacedItemScore()
+		score += calcMissplacedItemScore(rucksack)
 	}
+	return score
+}
+
+func CalcBadgesScore(filename string) int {
+	groups := lo.Chunk(readRucksacks(filename), 3)
+	score := lo.Reduce(
+		groups,
+		func(agg int, group []rucksack, _ int) int { return agg + calcGroupBadgeScore(group) },
+		0,
+	)
 	return score
 }
 
 type rucksack struct{ left, right string }
 
-func (r rucksack) missplacedItemScore() int {
+func calcMissplacedItemScore(r rucksack) int {
 	s1 := toSet(r.left)
 	s2 := toSet(r.right)
 	missplacedItem, _ := s1.Intersect(s2).Pop()
 	return score(missplacedItem)
+}
+
+func calcGroupBadgeScore(group []rucksack) int {
+	items := lo.Map(group, func(r rucksack, _ int) mapset.Set[rune] {
+		return toSet(r.left).Union(toSet(r.right))
+	})
+	badgeItem, _ := lo.Reduce(
+		items[1:],
+		func(agg mapset.Set[rune], r mapset.Set[rune], _ int) mapset.Set[rune] {
+			return agg.Intersect(r)
+		},
+		items[0],
+	).Pop()
+	return score(badgeItem)
 }
 
 func readRucksacks(filename string) []rucksack {
