@@ -12,7 +12,7 @@ func TestCalcMissplacedItemsScore(t *testing.T) {
 }
 
 func TestBadgesScore(t *testing.T) {
-	expected := 8072
+	expected := 2567
 	got := CalcBadgesScore("rucksacks.txt")
 	t.Logf("Expected=%d Got=%d", expected, got)
 	if got != expected {
