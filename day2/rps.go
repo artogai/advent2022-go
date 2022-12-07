@@ -1,14 +1,12 @@
 package day2
 
 import (
+	"file"
 	"fmt"
-	"log"
-	"os"
-	"strings"
 )
 
 func PlayTournament(filename string) int {
-	lines := readFileLines(filename)
+	lines := file.ReadLines(filename)
 	score := 0
 	for _, s := range lines {
 		game := parseGame(s)
@@ -19,7 +17,7 @@ func PlayTournament(filename string) int {
 }
 
 func PlayPlannedTournament(filename string) int {
-	lines := readFileLines(filename)
+	lines := file.ReadLines(filename)
 	score := 0
 	for _, s := range lines {
 		plannedGame := parsePlannedGame(s)
@@ -139,19 +137,4 @@ func parseOutcome(b byte) outcome {
 		return Win
 	}
 	panic(fmt.Errorf("can't parse outcome from %b", b))
-}
-
-func readFileLines(filename string) []string {
-	content, err := os.ReadFile(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	lines := strings.Split(string(content), "\n")
-
-	if len(lines) > 0 {
-		lines = lines[:len(lines)-1]
-	}
-
-	return lines
 }

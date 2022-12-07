@@ -1,12 +1,13 @@
 package day1
 
 import (
-	"bufio"
 	"errors"
+	"file"
 	"log"
-	"os"
 	"sort"
 	"strconv"
+
+	"github.com/samber/lo"
 )
 
 func CountCalories(filename string) (int, error) {
@@ -17,63 +18,32 @@ func CountCaloriesTopN(filename string, n int) (int, error) {
 	return maxCaloriesTopN(readInventories(filename), n)
 }
 
-func maxCaloriesTopN(inventories [][]int, n int) (int, error) {
-	inventoriesSize := len(inventories)
-	if inventoriesSize < n {
+func maxCaloriesTopN(inventories []int, n int) (int, error) {
+	if len(inventories) < n {
 		return -1, errors.New("inventories count is less than n")
 	}
-
-	caloriesByInventory := make([]int, 0, inventoriesSize)
-	for _, inventory := range inventories {
-		weight := 0
-		for _, item := range inventory {
-			weight += item
-		}
-		caloriesByInventory = append(caloriesByInventory, weight)
-	}
-
-	sort.Slice(caloriesByInventory, func(i, j int) bool {
-		return caloriesByInventory[i] > caloriesByInventory[j]
+	sort.Slice(inventories, func(i, j int) bool {
+		return inventories[i] > inventories[j]
 	})
-
-	sum := 0
-	for _, v := range caloriesByInventory[0:n] {
-		sum += v
-	}
-	return sum, nil
+	return lo.Sum(inventories[0:n]), nil
 }
 
-func readInventories(filename string) [][]int {
-	inventories := make([][]int, 0)
-	inventory := make([]int, 0)
-
-	f, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
-
-	scanner := bufio.NewScanner(f)
-
-	for scanner.Scan() {
-		line := scanner.Text()
+func readInventories(filename string) []int {
+	lines := file.ReadLines(filename)
+	inventories := []int{}
+	inventoryCalories := 0
+	for _, line := range lines {
 		if line == "" {
-			inventories = append(inventories, inventory)
-			inventory = make([]int, 0)
+			inventories = append(inventories, inventoryCalories)
+			inventoryCalories = 0
 		} else {
-			calories, err := strconv.Atoi(line)
+			itemCalories, err := strconv.Atoi(line)
 			if err != nil {
 				log.Fatal(err)
 			}
-			inventory = append(inventory, calories)
+			inventoryCalories += itemCalories
 		}
 	}
-
-	inventories = append(inventories, inventory)
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
+	inventories = append(inventories, inventoryCalories)
 	return inventories
 }
