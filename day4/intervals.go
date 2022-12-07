@@ -18,11 +18,31 @@ func CountIntervalsFullyContains(filename string) int {
 	return cnt
 }
 
+func CountIntervalsOverlap(filename string) int {
+	cnt := 0
+	for _, a := range readAssignments(filename) {
+		if a.first.overlaps(a.second) {
+			cnt += 1
+		}
+	}
+	return cnt
+}
+
 type interval struct{ start, end int }
 type assignment struct{ first, second interval }
 
 func (i interval) contains(other interval) bool {
 	return i.start <= other.start && i.end >= other.end
+}
+
+func (i interval) overlaps(other interval) bool {
+	if i.start < other.start && i.end < other.start {
+		return false
+	}
+	if i.start > other.end && i.end > other.end {
+		return false
+	}
+	return true
 }
 
 func readAssignments(filename string) []assignment {
