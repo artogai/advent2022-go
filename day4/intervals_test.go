@@ -1,21 +1,15 @@
 package day4
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestCountIntervalsFullyContains(t *testing.T) {
-	expected := 651
-	got := CountIntervalsFullyContains("intervals.txt")
-	t.Logf("Expected=%d Got=%d", expected, got)
-	if got != expected {
-		t.Fail()
-	}
+	require.Equal(t, 651, CountIntervalsFullyContains("intervals.txt"))
 }
 
 func TestCountIntervalsOverlap(t *testing.T) {
-	expected := 956
-	got := CountIntervalsOverlap("intervals.txt")
-	t.Logf("Expected=%d Got=%d", expected, got)
-	if got != expected {
-		t.Fail()
-	}
+	require.Equal(t, 956, CountIntervalsOverlap("intervals.txt"))
 }

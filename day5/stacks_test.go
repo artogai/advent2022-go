@@ -2,32 +2,21 @@ package day5
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestExecute(t *testing.T) {
 	s := generateStacks()
 	s.ExecuteCommandsFromFile("commands.txt", false)
-
-	expected := string("TDCHVHJTG")
-	got := string(s.ListTop())
-
-	t.Logf("Expected=%v Got=%v", expected, got)
-	if expected != got {
-		t.Fail()
-	}
+	require.EqualValues(t, "TDCHVHJTG", s.ListTop())
 }
 
 func TestExecuteNewCrane(t *testing.T) {
 	s := generateStacks()
 	s.ExecuteCommandsFromFile("commands.txt", true)
 
-	expectedNew := string("NGCMPJLHV")
-	gotNew := string(s.ListTop())
-
-	t.Logf("Expected=%v Got=%v", expectedNew, gotNew)
-	if expectedNew != gotNew {
-		t.Fail()
-	}
+	require.EqualValues(t, "NGCMPJLHV", s.ListTop())
 }
 
 func generateStacks() Stacks {

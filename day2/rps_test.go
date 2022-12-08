@@ -1,21 +1,15 @@
 package day2
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestPlayTournament(t *testing.T) {
-	expected := 15691
-	got := PlayTournament("strategy.txt")
-	t.Logf("Expected=%d Got=%d", expected, got)
-	if got != expected {
-		t.Fail()
-	}
+	require.Equal(t, 15691, PlayTournament("strategy.txt"))
 }
 
 func TestPlayPlannedTournament(t *testing.T) {
-	expected := 12989
-	got := PlayPlannedTournament("strategy.txt")
-	t.Logf("Expected=%d Got=%d", expected, got)
-	if got != expected {
-		t.Fail()
-	}
+	require.Equal(t, 12989, PlayPlannedTournament("strategy.txt"))
 }

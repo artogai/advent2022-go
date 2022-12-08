@@ -10,11 +10,11 @@ import (
 	"github.com/samber/lo"
 )
 
-func CountCalories(filename string) (int, error) {
-	return CountCaloriesTopN(filename, 1)
+func MaxInventoryCalories(filename string) (int, error) {
+	return MaxNInventoriesCalories(filename, 1)
 }
 
-func CountCaloriesTopN(filename string, n int) (int, error) {
+func MaxNInventoriesCalories(filename string, n int) (int, error) {
 	return maxCaloriesTopN(readInventories(filename), n)
 }
 
