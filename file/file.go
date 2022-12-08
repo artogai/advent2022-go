@@ -20,3 +20,11 @@ func ReadLines(filename string) []string {
 
 	return lines
 }
+
+func ReadFile(filename string) string {
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(content)
+}
