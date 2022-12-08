@@ -1,7 +1,7 @@
 package day6
 
 import (
-	"file"
+	"advent2022/file"
 	"testing"
 
 	"github.com/stretchr/testify/require"

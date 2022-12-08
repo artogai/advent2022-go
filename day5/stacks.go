@@ -1,7 +1,7 @@
 package day5
 
 import (
-	"file"
+	"advent2022/file"
 	"regexp"
 	"strconv"
 

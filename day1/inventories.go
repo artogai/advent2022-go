@@ -1,8 +1,8 @@
 package day1
 
 import (
+	"advent2022/file"
 	"errors"
-	"file"
 	"log"
 	"sort"
 	"strconv"

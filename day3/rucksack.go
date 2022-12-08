@@ -1,7 +1,7 @@
 package day3
 
 import (
-	"file"
+	"advent2022/file"
 	"fmt"
 
 	mapset "github.com/deckarep/golang-set/v2"

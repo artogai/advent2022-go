@@ -1,7 +1,7 @@
 package day2
 
 import (
-	"file"
+	"advent2022/file"
 	"fmt"
 )
 
