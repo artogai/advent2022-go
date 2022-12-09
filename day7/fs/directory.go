@@ -10,10 +10,11 @@ type Directory struct {
 	name    string
 	parent  *Directory
 	Content []Entry
+	size    int
 }
 
 func NewDirectory(name string, parent *Directory) *Directory {
-	return &Directory{name, parent, []Entry{}}
+	return &Directory{name, parent, []Entry{}, -1}
 }
 
 func (d *Directory) Name() string {
@@ -21,11 +22,14 @@ func (d *Directory) Name() string {
 }
 
 func (d *Directory) Size() int {
-	size := 0
-	for _, entry := range d.Content {
-		size += entry.Size()
+	if d.size == -1 {
+		size := 0
+		for _, entry := range d.Content {
+			size += entry.Size()
+		}
+		d.size = size
 	}
-	return size
+	return d.size
 }
 
 func (d *Directory) SetParent(p *Directory) {
