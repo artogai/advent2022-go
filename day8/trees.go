@@ -26,6 +26,56 @@ func CountVisible(filename string) int {
 	return cnt
 }
 
+func FindMaxScore(filename string) int {
+	heights := readHeights(filename)
+	scores := make2d[int](len(heights))
+
+	for i := 0; i < 4; i++ {
+		calcScoresFromLeft(heights, scores, i)
+		rotate(heights)
+	}
+
+	maxScore := 0
+	for _, row := range scores {
+		for _, score := range row {
+			if score > maxScore {
+				maxScore = score
+			}
+		}
+	}
+
+	return maxScore
+}
+
+func calcScoresFromLeft(heights [][]int, scores [][]int, rotationN int) {
+	n := len(heights)
+	for i, row := range heights {
+		for j, height := range row {
+			rI, rJ := restoreCoords(i, j, n, rotationN)
+			if !(rI == 0 || rJ == 0 || rI == n-1 || rJ == n-1) {
+				score := calcScore(j, height, row)
+				if scores[rI][rJ] == 0 {
+					scores[rI][rJ] = score
+				} else {
+					scores[rI][rJ] = scores[rI][rJ] * score
+				}
+			}
+		}
+	}
+}
+
+func calcScore(i int, height int, row []int) int {
+	score := 0
+	for c := i - 1; c >= 0; c-- {
+		if row[c] >= height {
+			return score + 1
+		} else {
+			score += 1
+		}
+	}
+	return score
+}
+
 func checkFromLeft(heights [][]int, visible [][]bool, rotationN int) {
 	n := len(heights)
 	for i, row := range heights {
