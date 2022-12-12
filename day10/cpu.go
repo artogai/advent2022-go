@@ -13,11 +13,7 @@ func TakeCpuMeasurements(filename string, cycles []int) int {
 	cpu(instructions, func(cycle, register int) {
 		if len(cycles) > 0 {
 			if cycle == cycles[0] {
-				if len(cycles) > 1 {
-					cycles = cycles[1:]
-				} else {
-					cycles = []int{}
-				}
+				cycles = cycles[1:]
 				measurements = append(measurements, cycle*register)
 			}
 		}
