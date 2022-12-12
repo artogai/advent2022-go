@@ -2,9 +2,11 @@ package day11
 
 import (
 	"advent2022/file"
+	"fmt"
 	"strconv"
 	"strings"
 
+	"github.com/bytom/bytom/math/checked"
 	"github.com/samber/lo"
 )
 
@@ -40,56 +42,66 @@ func parseMonkey(indx int, strs []string) monkey {
 	}
 }
 
-func parseItems(s string) []int {
+func parseItems(s string) []int64 {
 	s = strings.TrimPrefix(s, "Starting items: ")
 	itemsStrs := strings.Split(s, ", ")
-	items := make([]int, len(itemsStrs))
+	items := make([]int64, len(itemsStrs))
 	for i, itemStr := range itemsStrs {
 		item, err := strconv.Atoi(itemStr)
 		if err != nil {
 			panic(err)
 		}
-		items[i] = item
+		items[i] = int64(item)
 	}
 	return items
 }
 
-func parseOp(s string) func(int) int {
+func parseOp(s string) func(int64) int64 {
 	s = strings.TrimPrefix(s, "Operation: new = ")
 	opStr := strings.Split(s, " ")
 	op1, err1 := strconv.Atoi(opStr[0])
 	op2, err2 := strconv.Atoi(opStr[2])
+	op1_64 := int64(op1)
+	op2_64 := int64(op2)
 
-	var f func(x, y int) int
+	var f func(x, y int64) int64
 
 	switch opStr[1] {
 	case "+":
-		f = func(x, y int) int {
-			return x + y
+		f = func(x, y int64) int64 {
+			res, ok := checked.AddInt64(x, y)
+			if !ok {
+				panic(fmt.Sprintf("overflow %d+%d", x, y))
+			}
+			return res
 		}
 	case "*":
-		f = func(x, y int) int {
-			return x * y
+		f = func(x, y int64) int64 {
+			res, ok := checked.MulInt64(x, y)
+			if !ok {
+				panic(fmt.Sprintf("overflow %d*%d", x, y))
+			}
+			return res
 		}
 	}
-	return func(i int) int {
+	return func(i int64) int64 {
 		x1 := i
 		x2 := i
 		if err1 == nil {
-			x1 = op1
+			x1 = op1_64
 		}
 		if err2 == nil {
-			x2 = op2
+			x2 = op2_64
 		}
 		return f(x1, x2)
 	}
 }
 
-func parseCond(sTest, sTrue, sFalse string) func(int) int {
+func parseCond(sTest, sTrue, sFalse string) func(int64) int64 {
 	iTest := extractInt("Test: divisible by ", sTest)
 	iTrue := extractInt("If true: throw to monkey ", sTrue)
 	iFalse := extractInt("If false: throw to monkey ", sFalse)
-	return func(i int) int {
+	return func(i int64) int64 {
 		if i%iTest == 0 {
 			return iTrue
 		} else {
@@ -98,11 +110,11 @@ func parseCond(sTest, sTrue, sFalse string) func(int) int {
 	}
 }
 
-func extractInt(prefix string, s string) int {
+func extractInt(prefix string, s string) int64 {
 	s = strings.TrimPrefix(s, prefix)
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		panic(err)
 	}
-	return i
+	return int64(i)
 }

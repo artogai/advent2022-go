@@ -18,9 +18,8 @@ func TestMonkeyBusiness20Rounds(t *testing.T) {
 	require.Equal(t, 110220, ms.businessScore())
 }
 
-// func TestMonkeyBusiness10000Rounds(t *testing.T) {
-// 	ms := read("monkeys_sample.txt")
-// 	ms.runSimulation(1000, false)
-// 	fmt.Println(ms.businessScore())
-// 	// require.Equal(t, 37691855600, ms.businessScore())
-// }
+func TestMonkeyBusinessSample10000Rounds(t *testing.T) {
+	ms := read("monkeys.txt")
+	ms.runSimulation(10000, false)
+	require.Equal(t, 19457438264, ms.businessScore())
+}
