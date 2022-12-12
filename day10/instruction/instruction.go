@@ -8,19 +8,19 @@ import (
 	"github.com/samber/lo"
 )
 
-type instruction interface {
+type Instruction interface {
 	name() string
 }
 type Noop struct{}
 type Addx struct{ Value int }
 
-func Read(filename string) []instruction {
-	return lo.Map(file.ReadLines(filename), func(line string, _ int) instruction {
+func Read(filename string) []Instruction {
+	return lo.Map(file.ReadLines(filename), func(line string, _ int) Instruction {
 		return parse(line)
 	})
 }
 
-func parse(s string) instruction {
+func parse(s string) Instruction {
 	if s == "noop" {
 		return Noop{}
 	} else {

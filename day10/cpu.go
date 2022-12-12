@@ -7,93 +7,69 @@ import (
 	"github.com/samber/lo"
 )
 
-func Cpu2() string {
-	instructions := instruction.Read("instructions.txt")
-	cycle := 1
-	register := 1
-	line := make([]rune, 40)
-	for i := range line {
-		line[i] = '.'
-	}
-	var str strings.Builder
-	for _, inst := range instructions {
-		switch instT := inst.(type) {
-		case instruction.Noop:
-			draw(line, cycle, register)
-			cycle += 1
-			if cycle%40 == 1 {
-				str.WriteString(string(line) + "\n")
-				line = make([]rune, 40)
-				for i := range line {
-					line[i] = '.'
-				}
-			}
-		case instruction.Addx:
-			draw(line, cycle, register)
-			cycle += 1
-			if cycle%40 == 1 {
-				str.WriteString(string(line) + "\n")
-				line = make([]rune, 40)
-				for i := range line {
-					line[i] = '.'
-				}
-			}
-			draw(line, cycle, register)
-			cycle += 1
-			if cycle%40 == 1 {
-				str.WriteString(string(line) + "\n")
-				line = make([]rune, 40)
-				for i := range line {
-					line[i] = '.'
-				}
-			}
-			register += instT.Value
-		}
-	}
-	return str.String()
-}
-
-func draw(line []rune, cycle int, register int) {
-	if cycle%40 >= register && cycle%40 <= register+2 {
-		line[cycle%40-1] = '#'
-	}
-}
-
-func Cpu() int {
-	instructions := instruction.Read("instructions.txt")
-	cycles := []int{20, 60, 100, 140, 180, 220}
+func TakeCpuMeasurements(filename string, cycles []int) int {
 	measurements := make([]int, 0, len(cycles))
-	cycle := 1
-	register := 1
-	for _, inst := range instructions {
-		switch instT := inst.(type) {
-		case instruction.Noop:
-			cycle += 1
-			cycles, measurements = measure(cycle, register, cycles, measurements)
-		case instruction.Addx:
-			cycle += 1
-			cycles, measurements = measure(cycle, register, cycles, measurements)
-			cycle += 1
-			register += instT.Value
-			cycles, measurements = measure(cycle, register, cycles, measurements)
+	instructions := instruction.Read(filename)
+	cpu(instructions, func(cycle, register int) {
+		if len(cycles) > 0 {
+			if cycle == cycles[0] {
+				if len(cycles) > 1 {
+					cycles = cycles[1:]
+				} else {
+					cycles = []int{}
+				}
+				measurements = append(measurements, cycle*register)
+			}
 		}
-	}
-
+	})
 	return lo.Sum(measurements)
 }
 
-func measure(cycle int, register int, cycles []int, measurements []int) ([]int, []int) {
-	if len(cycles) == 0 {
-		return cycles, measurements
-	}
+func DrawCRT(filename string) string {
+	resolution := 40
+	instructions := instruction.Read(filename)
+	line := make([]rune, resolution)
+	clear(line, resolution)
+	var str strings.Builder
 
-	if cycle == cycles[0] {
-		if len(cycles) > 1 {
-			cycles = cycles[1:]
-		} else {
-			cycles = []int{}
+	cpu(instructions, func(cycle, register int) {
+		if cycle != 1 && cycle%resolution == 1 {
+			str.WriteString(string(line))
+			str.WriteString("\n")
+			clear(line, resolution)
 		}
-		measurements = append(measurements, cycle*register)
+		draw(line, cycle, register, resolution)
+	})
+	return str.String()
+}
+
+func cpu(insts []instruction.Instruction, onCycle func(cycle, register int)) {
+	cycle := 1
+	register := 1
+	for _, inst := range insts {
+		switch instT := inst.(type) {
+		case instruction.Noop:
+			onCycle(cycle, register)
+			cycle += 1
+		case instruction.Addx:
+			onCycle(cycle, register)
+			cycle += 1
+			onCycle(cycle, register)
+			cycle += 1
+			register += instT.Value
+		}
 	}
-	return cycles, measurements
+	onCycle(cycle, register)
+}
+
+func clear(line []rune, resolution int) {
+	for i := range line {
+		line[i] = '.'
+	}
+}
+
+func draw(line []rune, cycle int, register int, resolution int) {
+	if cycle%resolution >= register && cycle%resolution <= register+2 {
+		line[cycle%resolution-1] = '#'
+	}
 }
