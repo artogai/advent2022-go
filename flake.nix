@@ -1,5 +1,5 @@
 {
-  description = "Rust env flake";
+  description = "Go env flake";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
@@ -13,19 +13,19 @@
       in
       {
         devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
+          nativeBuildInputs = with pkgs; [            
             go
-            go-tools
-            gotools
             gopls
             delve
             go-outline
-            gocode
-            gopkgs
-            gocode-gomod
-            godef
-            golint
+            gomodifytags
+            impl
+            gotests
+            golangci-lint
+            go-tools #staticcheck
           ];
+          
+          GOPATH = "/home/artem/Projects/go";
         };
       });
 }
