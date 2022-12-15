@@ -3,10 +3,11 @@ package day15
 import (
 	"advent2022/file"
 	m "advent2022/math"
-	"math"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"golang.org/x/exp/slices"
 )
 
 type coord struct{ x, y int }
@@ -18,58 +19,120 @@ type sensor struct {
 }
 
 func CountScanned(y int, filename string) int {
-	sensors, minC, maxC, maxDist := read(filename)
+	sensors := read(filename)
+	beacons := beacons(sensors)
+	scanned := scannedSegments(y, sensors)
 	cnt := 0
-	for x := minC.x - maxDist; x <= maxC.x+maxDist; x++ {
-		if isScanned(x, y, sensors) {
-			cnt++
+	for _, r := range scanned {
+		cnt += r.y - r.x + 1
+	}
+	for _, b := range beacons {
+		if b.y == y && contains(scanned, b.x) {
+			cnt--
 		}
 	}
+
 	return cnt
 }
 
-func isScanned(x, y int, sensors []sensor) bool {
-	c := coord{x, y}
-	for _, s := range sensors {
-		if c == s.beacon {
-			return false
+func FindBeacon(maxC int, filename string) coord {
+	sensors := read(filename)
+	for y := 0; y < maxC; y++ {
+		scanned := scannedSegments(y, sensors)
+		notScanned := invert(scanned, maxC)
+		if len(notScanned) != 0 {
+			return coord{notScanned[0].x, y}
 		}
 	}
-	for _, s := range sensors {
-		if c.distance(s.coord) <= s.radius {
+	panic("no beacon found")
+}
+
+func invert(scanned []coord, maxX int) []coord {
+	inverted := []coord{}
+	for i := 0; i < len(scanned); i++ {
+		if i == 0 {
+			inverted = append(inverted, coord{0, scanned[i].x - 1})
+		} else {
+			inverted = append(inverted, coord{scanned[i-1].y + 1, scanned[i].x - 1})
+		}
+	}
+	inverted = append(inverted, coord{scanned[len(scanned)-1].y + 1, maxX})
+
+	filtered := []coord{}
+	for _, s := range inverted {
+		if s.y-s.x >= 0 {
+			filtered = append(filtered, s)
+		}
+	}
+	return filtered
+}
+
+func contains(segments []coord, x int) bool {
+	for _, s := range segments {
+		if x >= s.x && x <= s.y {
 			return true
 		}
 	}
 	return false
 }
 
+func beacons(sensors []sensor) []coord {
+	beacons := map[coord]bool{}
+	for _, s := range sensors {
+		beacons[s.beacon] = true
+	}
+	keys := make([]coord, 0, len(beacons))
+	for c := range beacons {
+		keys = append(keys, c)
+	}
+	return keys
+}
+
+func scannedSegments(y int, sensors []sensor) []coord {
+	scanned := []coord{}
+	for _, s := range sensors {
+		if y >= s.y-s.radius && y <= s.y+s.radius {
+			xradius := s.radius - m.Abs(y-s.y)
+			scanned = append(scanned, coord{s.x - xradius, s.x + xradius})
+		}
+	}
+	slices.SortFunc(scanned, func(i, j coord) bool { return i.x < j.x })
+	return joinSegments(scanned)
+}
+
+func joinSegments(sortedSegments []coord) []coord {
+	joined := []coord{}
+	for _, s := range sortedSegments {
+		if len(joined) == 0 {
+			joined = append(joined, s)
+		} else {
+			last := joined[len(joined)-1]
+			if s.x > last.y {
+				joined = append(joined, s)
+			} else {
+				last.y = m.Max(last.y, s.y)
+				joined[len(joined)-1] = last
+			}
+		}
+	}
+	return joined
+}
+
 func (c *coord) distance(c0 coord) int {
 	return m.Abs(c.x-c0.x) + m.Abs(c.y-c0.y)
 }
 
-func read(filename string) (sensors []sensor, minC, maxC coord, maxDist int) {
-	sensors = []sensor{}
-	minC = coord{math.MaxInt, math.MaxInt}
-	maxC = coord{math.MinInt, math.MinInt}
-	maxDist = 0
+func read(filename string) []sensor {
+	sensors := []sensor{}
 
 	for _, row := range file.ReadLines(filename) {
 		arr := strings.Split(row, ":")
 		self := extract(arr[0])
 		beacon := extract(arr[1])
-		dist := self.distance(beacon)
-
-		sensors = append(sensors, sensor{self, beacon, dist})
-		minC.x = m.Min(minC.x, self.x, beacon.x)
-		maxC.x = m.Max(maxC.x, self.x, beacon.x)
-		minC.y = m.Min(minC.y, self.y, beacon.y)
-		maxC.y = m.Max(maxC.y, self.y, beacon.y)
-		if dist > maxDist {
-			maxDist = dist
-		}
+		sensors = append(sensors, sensor{self, beacon, self.distance(beacon)})
 	}
 
-	return
+	return sensors
 }
 
 var (
