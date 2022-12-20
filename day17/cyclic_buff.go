@@ -10,10 +10,10 @@ func newCyclicBuff[A any](arr []A) *cyclicBuff[A] {
 }
 
 func (c *cyclicBuff[A]) next() A {
-	res := c.arr[c.i]
+	i := c.i
 	c.i += 1
 	if c.i == len(c.arr) {
 		c.i = 0
 	}
-	return res
+	return c.arr[i]
 }

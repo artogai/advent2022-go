@@ -3,127 +3,153 @@ package day17
 type point struct{ x, y int }
 
 type shape interface {
+	reset(top int)
 	points() []point
+	findFullLine(c *cave) (int, bool)
 }
 
-type hline []point
-type cross []point
-type lshape []point
-type vline []point
-type square []point
+type hline [4]point
+type cross [5]point
+type lshape [5]point
+type vline [4]point
+type square [4]point
 
-// .C###.
-func newHLine(top int) *hline {
+func (s *hline) reset(top int) {
 	x := 2
 	y := top - 4
-	points := make([]point, 4)
 	for i := 0; i < 4; i++ {
-		points[i] = point{x + i, y}
+		(*s)[i] = point{x + i, y}
 	}
-	res := hline(points)
-	return &res
 }
 
-// ..#..
-// .#C#.
-// ..#..
-func newCross(top int) *cross {
-	centerX := 3
-	centerY := top - 5
-	points := []point{
-		{centerX, centerY},
-		{centerX - 1, centerY},
-		{centerX + 1, centerY},
-		{centerX, centerY - 1},
-		{centerX, centerY + 1},
-	}
-	res := cross(points)
-	return &res
+func (s *cross) reset(top int) {
+	x := 3
+	y := top - 5
+	(*s)[0] = point{x, y - 1}
+	(*s)[1] = point{x, y}
+	(*s)[2] = point{x, y + 1}
+	(*s)[3] = point{x - 1, y}
+	(*s)[4] = point{x + 1, y}
 }
 
-// ...#.
-// ...#.
-// .##C.
-func newLShape(top int) *lshape {
+func (s *lshape) reset(top int) {
 	x := 4
 	y := top - 4
-	points := []point{
-		{x, y},
-		{x - 1, y},
-		{x - 2, y},
-		{x, y - 1},
-		{x, y - 2},
-	}
-	res := lshape(points)
-	return &res
+	(*s)[0] = point{x, y - 2}
+	(*s)[1] = point{x, y - 1}
+	(*s)[2] = point{x, y}
+	(*s)[3] = point{x - 1, y}
+	(*s)[4] = point{x - 2, y}
 }
 
-// .#.
-// .#.
-// .#.
-// .C.
-func newVLine(top int) *vline {
+func (s *vline) reset(top int) {
 	x := 2
 	y := top - 4
-	points := make([]point, 4)
 	for i := 0; i < 4; i++ {
-		points[i] = point{x, y - i}
+		(*s)[i] = point{x, y - i}
 	}
-	res := vline(points)
-	return &res
 }
 
-// .##.
-// .C#.
-func newSquare(top int) *square {
+func (s *square) reset(top int) {
 	x := 2
 	y := top - 4
-	points := []point{
-		{x, y},
-		{x + 1, y},
-		{x, y - 1},
-		{x + 1, y - 1},
+	(*s)[0] = point{x, y - 1}
+	(*s)[1] = point{x + 1, y - 1}
+	(*s)[2] = point{x, y}
+	(*s)[3] = point{x + 1, y}
+}
+
+func (s *hline) findFullLine(c *cave) (int, bool) {
+	return findFullLine(s[0].y, c)
+}
+
+func (s *cross) findFullLine(c *cave) (int, bool) {
+	if y, exists := findFullLine(s[1].y, c); exists {
+		return y, exists
 	}
-	res := square(points)
-	return &res
+	if y, exists := findFullLine(s[2].y, c); exists {
+		return y, exists
+	}
+	return -1, false
+}
+
+func (s *lshape) findFullLine(c *cave) (int, bool) {
+	if y, exists := findFullLine(s[2].y, c); exists {
+		return y, exists
+	}
+	return -1, false
+}
+
+func (s *vline) findFullLine(c *cave) (int, bool) {
+	for _, p := range s {
+		if y, exists := findFullLine(p.y, c); exists {
+			return y, exists
+		}
+	}
+	return -1, false
+}
+
+func (s *square) findFullLine(c *cave) (int, bool) {
+	if y, exists := findFullLine(s[0].y, c); exists {
+		return y, exists
+	}
+	if y, exists := findFullLine(s[2].y, c); exists {
+		return y, exists
+	}
+	return -1, false
 }
 
 func (s *hline) points() []point {
-	return *s
+	return (*s)[:]
 }
 
 func (s *cross) points() []point {
-	return *s
+	return (*s)[:]
 }
 
 func (s *lshape) points() []point {
-	return *s
+	return (*s)[:]
 }
 
 func (s *vline) points() []point {
-	return *s
+	return (*s)[:]
 }
 
 func (s *square) points() []point {
-	return *s
+	return (*s)[:]
 }
 
-func move(points []point, dx, dy int, field [][]rune) ([]point, bool) {
-	newPoints := make([]point, len(points))
-	for i, p := range points {
-		newPoints[i] = point{p.x + dx, p.y + dy}
-	}
-	return newPoints, isValid(newPoints, field)
-}
-
-func isValid(points []point, field [][]rune) bool {
+func move(s shape, dx, dy int, c *cave) bool {
+	points := s.points()
 	for _, p := range points {
-		if p.x < 0 || p.x >= len(field[0]) || p.y < 0 || p.y >= len(field) {
+		newX := p.x + dx
+		newY := p.y + dy
+		if newX < 0 || newX >= c.width || newY < 0 || newY >= c.height {
 			return false
 		}
-		if field[p.y][p.x] != '.' {
+		if (*c.field)[newY][newX] {
 			return false
 		}
+	}
+
+	for i := range points {
+		points[i].x += dx
+		points[i].y += dy
 	}
 	return true
 }
+
+func findFullLine(y int, c *cave) (int, bool) {
+	for i := 0; i < c.width; i++ {
+		if !(*c.field)[y][i] {
+			return -1, false
+		}
+	}
+	return y, true
+}
+
+// Number of lines above the top to keep clear.
+// Lines above (top - clearAboveTop) can contain garbage blocks from previous iterations,
+// but this won't affect the current iteration because blocks always spawn
+// at 3 lines above the top
+const clearAboveTop = 7
