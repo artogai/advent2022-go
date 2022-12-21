@@ -15,16 +15,18 @@ func TestDecrypt(t *testing.T) {
 	fmt.Println(res)
 }
 
-// func TestDecrypt2(t *testing.T) {
-// 	numbers := readNumbers("encrypted.txt")
-// 	for i := range numbers {
-// 		numbers[i] *= 811589153
-// 	}
-// 	message := NewMessage(numbers)
-// 	message.Decrypt()
-// 	res := message.Get(1000) + message.Get(2000) + message.Get(3000)
-// 	fmt.Println(res)
-// }
+func TestDecrypt2(t *testing.T) {
+	numbers := readNumbers("encrypted.txt")
+	for i := range numbers {
+		numbers[i] *= 811589153
+	}
+	message := NewMessage(numbers)
+	for i := 0; i < 10; i++ {
+		message.Decrypt()
+	}
+	res := message.Get(1000) + message.Get(2000) + message.Get(3000)
+	fmt.Println(res)
+}
 
 func readNumbers(filename string) []int {
 	lines := file.ReadLines(filename)

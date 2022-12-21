@@ -54,11 +54,13 @@ func (m *Message) findIndex(pos int) int {
 func (m *Message) mixAt(idx int) {
 	v := m.values[idx]
 	if v > 0 {
-		swapF(m.values, idx, v)
-		swapF(m.idxs, idx, v)
+		cnt := v % (m.length - 1)
+		swapF(m.values, idx, cnt)
+		swapF(m.idxs, idx, cnt)
 	} else if v < 0 {
-		swapB(m.values, idx, -v)
-		swapB(m.idxs, idx, -v)
+		cnt := -v % (m.length - 1)
+		swapB(m.values, idx, cnt)
+		swapB(m.idxs, idx, cnt)
 	}
 }
 
