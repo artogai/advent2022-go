@@ -1,4 +1,4 @@
-package math
+package imath
 
 func Max(is ...int) int {
 	max := is[0]

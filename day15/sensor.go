@@ -2,7 +2,7 @@ package day15
 
 import (
 	"advent2022/file"
-	m "advent2022/math"
+	"advent2022/imath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -92,7 +92,7 @@ func scannedSegments(y int, sensors []sensor) []coord {
 	scanned := []coord{}
 	for _, s := range sensors {
 		if y >= s.y-s.radius && y <= s.y+s.radius {
-			xradius := s.radius - m.Abs(y-s.y)
+			xradius := s.radius - imath.Abs(y-s.y)
 			scanned = append(scanned, coord{s.x - xradius, s.x + xradius})
 		}
 	}
@@ -110,7 +110,7 @@ func joinSegments(sortedSegments []coord) []coord {
 			if s.x > last.y {
 				joined = append(joined, s)
 			} else {
-				last.y = m.Max(last.y, s.y)
+				last.y = imath.Max(last.y, s.y)
 				joined[len(joined)-1] = last
 			}
 		}
@@ -119,7 +119,7 @@ func joinSegments(sortedSegments []coord) []coord {
 }
 
 func (c *coord) distance(c0 coord) int {
-	return m.Abs(c.x-c0.x) + m.Abs(c.y-c0.y)
+	return imath.Abs(c.x-c0.x) + imath.Abs(c.y-c0.y)
 }
 
 func read(filename string) []sensor {
