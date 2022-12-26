@@ -2,8 +2,9 @@ package day25
 
 import (
 	"advent2022/file"
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncodeDecode(t *testing.T) {
@@ -11,7 +12,5 @@ func TestEncodeDecode(t *testing.T) {
 	for _, s := range file.ReadLines("snafu.txt") {
 		r += decode(s)
 	}
-
-	fmt.Println(r)
-	fmt.Println(encode(r))
+	require.Equal(t, "20==1==12=0111=2--20", encode(r))
 }

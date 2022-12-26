@@ -15,15 +15,15 @@ func encode(i int) string {
 
 		switch k {
 		case 2:
-			res.WriteString("2")
+			res.WriteRune('2')
 		case 1:
-			res.WriteString("1")
+			res.WriteRune('1')
 		case 0:
-			res.WriteString("0")
+			res.WriteRune('0')
 		case -1:
-			res.WriteString("-")
+			res.WriteRune('-')
 		case -2:
-			res.WriteString("=")
+			res.WriteRune('=')
 		}
 
 		if n == 0 {
