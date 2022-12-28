@@ -15,7 +15,7 @@ type Noop struct{}
 type Addx struct{ Value int }
 
 func Read(filename string) []Instruction {
-	return lo.Map(file.ReadLines(filename), func(line string, _ int) Instruction {
+	return lo.Map(file.ReadFileLines(filename), func(line string, _ int) Instruction {
 		return parse(line)
 	})
 }

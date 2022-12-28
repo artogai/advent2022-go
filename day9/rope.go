@@ -225,7 +225,7 @@ func (r rope) len() int {
 }
 
 func readDirections(filename string) []direction {
-	return parseDirections(file.ReadLines(filename)...)
+	return parseDirections(file.ReadFileLines(filename)...)
 }
 
 func parseDirections(strs ...string) []direction {

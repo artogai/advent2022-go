@@ -33,7 +33,7 @@ func TestMoveUntilStop(t *testing.T) {
 
 func parse(filename string) map[coordinate]struct{} {
 	elves := map[coordinate]struct{}{}
-	for i, line := range file.ReadLines(filename) {
+	for i, line := range file.ReadFileLines(filename) {
 		for j, c := range line {
 			if c == '#' {
 				elves[coordinate{i, j}] = struct{}{}

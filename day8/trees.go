@@ -104,10 +104,10 @@ func restoreCoords(i, j, n int, rotationN int) (int, int) {
 }
 
 func readHeights(filename string) [][]int {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	heights := make([][]int, len(lines))
 
-	for i, line := range file.ReadLines(filename) {
+	for i, line := range file.ReadFileLines(filename) {
 		heights[i] = make([]int, len(line))
 		for j, str := range line {
 			height, _ := strconv.Atoi(string(str))

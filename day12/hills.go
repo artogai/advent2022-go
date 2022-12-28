@@ -47,10 +47,10 @@ func findShortestPath(start, finish point, heights heights) int {
 }
 
 func readHeights(filename string) (point, point, heights) {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	heights := make([][]int, len(lines))
 	var s, e point
-	for i, line := range file.ReadLines(filename) {
+	for i, line := range file.ReadFileLines(filename) {
 		heights[i] = make([]int, len(line))
 		for j, ch := range line {
 			switch ch {

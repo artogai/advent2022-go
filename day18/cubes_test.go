@@ -22,7 +22,7 @@ func TestSurfaceAreaFixed(t *testing.T) {
 }
 
 func parseCubes(filename string) []cube {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	cubes := make([]cube, 0, len(lines))
 	for _, cStr := range lines {
 		arr := strings.Split(cStr, ",")

@@ -13,7 +13,7 @@ type Ls struct{ Content []fs.Entry }
 type Cd struct{ Path string }
 
 func Read(filename string) []Cmd {
-	return Parse(file.ReadLines(filename)...)
+	return Parse(file.ReadFileLines(filename)...)
 }
 
 func Parse(lines ...string) []Cmd {

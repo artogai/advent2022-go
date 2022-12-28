@@ -178,7 +178,7 @@ func move(b blizzards, i, j int, c cave) {
 }
 
 func parse(filename string) cave {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	field := make([][]tile, len(lines))
 	for i, line := range lines {
 		field[i] = make([]tile, len(line))

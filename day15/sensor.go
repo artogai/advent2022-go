@@ -125,7 +125,7 @@ func (c *coord) distance(c0 coord) int {
 func read(filename string) []sensor {
 	sensors := []sensor{}
 
-	for _, row := range file.ReadLines(filename) {
+	for _, row := range file.ReadFileLines(filename) {
 		arr := strings.Split(row, ":")
 		self := extract(arr[0])
 		beacon := extract(arr[1])

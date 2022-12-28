@@ -9,7 +9,7 @@ import (
 
 func TestEncodeDecode(t *testing.T) {
 	r := 0
-	for _, s := range file.ReadLines("snafu.txt") {
+	for _, s := range file.ReadFileLines("snafu.txt") {
 		r += decode(s)
 	}
 	require.Equal(t, "20==1==12=0111=2--20", encode(r))

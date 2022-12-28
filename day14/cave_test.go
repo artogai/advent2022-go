@@ -7,7 +7,7 @@ import (
 )
 
 func TestXxx(t *testing.T) {
-	c := read(1000, true, file.ReadLines("cave_sample.txt")...)
+	c := read(1000, true, file.ReadFileLines("cave_sample.txt")...)
 	for c.dropSand(0, 500) {
 	}
 
@@ -17,7 +17,7 @@ func TestXxx(t *testing.T) {
 }
 
 func TestXxx2(t *testing.T) {
-	c := read(1000, true, file.ReadLines("cave.txt")...)
+	c := read(1000, true, file.ReadFileLines("cave.txt")...)
 	for c.dropSand(0, 500) {
 	}
 

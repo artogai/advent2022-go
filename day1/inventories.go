@@ -3,33 +3,35 @@ package day1
 import (
 	"advent2022/file"
 	"errors"
-	"log"
 	"sort"
 	"strconv"
 
 	"github.com/samber/lo"
 )
 
-func MaxInventoryCalories(filename string) (int, error) {
-	return MaxNInventoriesCalories(filename, 1)
+func TopOne(filename string) (int, error) {
+	return SumTop(filename, 1)
 }
 
-func MaxNInventoriesCalories(filename string, n int) (int, error) {
-	return maxCaloriesTopN(readInventories(filename), n)
+func SumTop(filename string, n int) (int, error) {
+	return sumTop(readInventories(filename), n)
 }
 
-func maxCaloriesTopN(inventories []int, n int) (int, error) {
-	if len(inventories) < n {
-		return -1, errors.New("inventories count is less than n")
+func sumTop(arr []int, n int) (int, error) {
+	if len(arr) < n {
+		return -1, errors.New("arr count is less than n")
 	}
-	sort.Slice(inventories, func(i, j int) bool {
-		return inventories[i] > inventories[j]
+	arrCopy := make([]int, len(arr))
+	copy(arrCopy, arr)
+
+	sort.Slice(arrCopy, func(i, j int) bool {
+		return arrCopy[i] > arrCopy[j]
 	})
-	return lo.Sum(inventories[0:n]), nil
+	return lo.Sum(arrCopy[:n]), nil
 }
 
 func readInventories(filename string) []int {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	inventories := []int{}
 	inventoryCalories := 0
 	for _, line := range lines {
@@ -39,7 +41,7 @@ func readInventories(filename string) []int {
 		} else {
 			itemCalories, err := strconv.Atoi(line)
 			if err != nil {
-				log.Fatal(err)
+				panic(err)
 			}
 			inventoryCalories += itemCalories
 		}

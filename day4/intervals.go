@@ -4,11 +4,9 @@ import (
 	"advent2022/file"
 	"strconv"
 	"strings"
-
-	"github.com/samber/lo"
 )
 
-func CountIntervalsFullyContains(filename string) int {
+func CountContains(filename string) int {
 	cnt := 0
 	for _, a := range readAssignments(filename) {
 		if a.first.contains(a.second) || a.second.contains(a.first) {
@@ -18,7 +16,7 @@ func CountIntervalsFullyContains(filename string) int {
 	return cnt
 }
 
-func CountIntervalsOverlap(filename string) int {
+func CountOverlaps(filename string) int {
 	cnt := 0
 	for _, a := range readAssignments(filename) {
 		if a.first.overlaps(a.second) {
@@ -46,9 +44,7 @@ func (i interval) overlaps(other interval) bool {
 }
 
 func readAssignments(filename string) []assignment {
-	lines := file.ReadLines(filename)
-	assignments := lo.Map(lines, func(s string, _ int) assignment { return parseAssignments(s) })
-	return assignments
+	return file.ParseFile(filename, parseAssignments)
 }
 
 func parseAssignments(s string) assignment {

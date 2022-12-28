@@ -8,73 +8,62 @@ import (
 	"github.com/samber/lo"
 )
 
-func CalcMissplacedItemsScore(filename string) int {
+func MissplacedItemsScore(filename string) int {
 	score := 0
 	for _, rucksack := range readRucksacks(filename) {
-		score += calcMissplacedItemScore(rucksack)
+		score += missplacedItemScore(rucksack)
 	}
 	return score
 }
 
-func CalcBadgesScore(filename string) int {
-	groups := lo.Chunk(readRucksacks(filename), 3)
-	score := lo.Reduce(
-		groups,
-		func(agg int, group []rucksack, _ int) int { return agg + calcGroupBadgeScore(group) },
-		0,
-	)
+func BadgesScore(filename string) int {
+	score := 0
+	for _, group := range lo.Chunk(readRucksacks(filename), 3) {
+		score += badgeScore(group)
+	}
 	return score
 }
 
-type rucksack struct{ left, right string }
+type item rune
+type rucksack struct{ left, right mapset.Set[item] }
 
-func calcMissplacedItemScore(r rucksack) int {
-	s1 := toSet(r.left)
-	s2 := toSet(r.right)
-	missplacedItem, _ := s1.Intersect(s2).Pop()
-	return score(missplacedItem)
+func missplacedItemScore(r rucksack) int {
+	item, exists := r.left.Intersect(r.right).Pop()
+	if !exists {
+		panic("missplacedItemScore: no missplaced item")
+	}
+	return score(item)
 }
 
-func calcGroupBadgeScore(group []rucksack) int {
-	items := lo.Map(group, func(r rucksack, _ int) mapset.Set[rune] {
-		return toSet(r.left).Union(toSet(r.right))
-	})
-	badgeItem, _ := lo.Reduce(
-		items[1:],
-		func(agg mapset.Set[rune], r mapset.Set[rune], _ int) mapset.Set[rune] {
-			return agg.Intersect(r)
-		},
-		items[0],
-	).Pop()
+func badgeScore(group []rucksack) int {
+	items := group[0].left.Union(group[0].right)
+	for _, r := range group[1:] {
+		items = items.Intersect(r.left.Union(r.right))
+	}
+	badgeItem, exists := items.Pop()
+	if !exists {
+		panic("badgeScore: no badge item")
+	}
 	return score(badgeItem)
 }
 
+func score(i item) int {
+	if i >= 65 && i < 91 { // A-Z
+		return int(i - 38)
+	}
+	if i >= 97 && i < 123 { // a-z
+		return int(i - 96)
+	}
+	panic(fmt.Sprintln("unexpected character", i))
+}
+
 func readRucksacks(filename string) []rucksack {
-	lines := file.ReadLines(filename)
-	rucksacks := lo.Map(lines, func(s string, _ int) rucksack { return parseRucksack(s) })
-	return rucksacks
+	return file.ParseFile(filename, parseRucksack)
 }
 
 func parseRucksack(s string) rucksack {
 	pivot := len(s) / 2
-	return rucksack{s[:pivot], s[pivot:]}
-}
-
-func score(r rune) int {
-	// A-Z
-	if r >= 65 && r < 91 {
-		return int(r - 38)
-	} else if r >= 97 && r < 123 { // a-z
-		return int(r - 96)
-	} else {
-		panic(fmt.Errorf("unexpected character %d", r))
-	}
-}
-
-func toSet(s string) mapset.Set[rune] {
-	set := mapset.NewThreadUnsafeSet[rune]()
-	for _, r := range s {
-		set.Add(r)
-	}
-	return set
+	left := mapset.NewThreadUnsafeSet([]item(s[:pivot])...)
+	right := mapset.NewThreadUnsafeSet([]item(s[pivot:])...)
+	return rucksack{left, right}
 }

@@ -6,10 +6,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCountIntervalsFullyContains(t *testing.T) {
-	require.Equal(t, 651, CountIntervalsFullyContains("intervals.txt"))
+var path = "intervals.txt"
+
+func TestCountContains(t *testing.T) {
+	require.Equal(t, 651, CountContains(path))
 }
 
-func TestCountIntervalsOverlap(t *testing.T) {
-	require.Equal(t, 956, CountIntervalsOverlap("intervals.txt"))
+func TestCountOverlaps(t *testing.T) {
+	require.Equal(t, 956, CountOverlaps(path))
 }

@@ -49,7 +49,7 @@ func IgnoreMaxOutput32(t *testing.T) {
 }
 
 func readBlueprints(filename string) []blueprint {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	blueprints := make([]blueprint, 0, len(lines))
 	for _, line := range lines {
 		blueprints = append(blueprints, parseBlueprint(line))

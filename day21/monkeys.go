@@ -43,7 +43,7 @@ type evalNode struct {
 }
 
 func NewExprs(filename string) exprs {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	es := make(exprs)
 	for _, l := range lines {
 		id, expr := parseExpr(l)

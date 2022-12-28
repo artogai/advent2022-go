@@ -6,16 +6,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var path = "commands.txt"
+
 func TestExecute(t *testing.T) {
 	s := generateStacks()
-	s.ExecuteCommandsFromFile("commands.txt", false)
+	cmds := ReadCommands(path)
+	s.Execute(cmds, false)
 	require.EqualValues(t, "TDCHVHJTG", s.ListTop())
 }
 
 func TestExecuteNewCrane(t *testing.T) {
 	s := generateStacks()
-	s.ExecuteCommandsFromFile("commands.txt", true)
-
+	cmds := ReadCommands(path)
+	s.Execute(cmds, true)
 	require.EqualValues(t, "NGCMPJLHV", s.ListTop())
 }
 

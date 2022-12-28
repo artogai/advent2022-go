@@ -106,7 +106,7 @@ func areValid(s1, s2 signal) (bool, bool) {
 }
 
 func TestSignals(t *testing.T) {
-	signals := lo.Chunk(file.ReadLines("signals.txt"), 3)
+	signals := lo.Chunk(file.ReadFileLines("signals.txt"), 3)
 
 	valid := []int{}
 	for i, s := range signals {
@@ -122,7 +122,7 @@ func TestSignals(t *testing.T) {
 }
 
 func TestSignals2(t *testing.T) {
-	signalsLines := lo.Chunk(file.ReadLines("signals.txt"), 3)
+	signalsLines := lo.Chunk(file.ReadFileLines("signals.txt"), 3)
 
 	signals := []signal{}
 

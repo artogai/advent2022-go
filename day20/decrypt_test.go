@@ -29,7 +29,7 @@ func TestDecrypt2(t *testing.T) {
 }
 
 func readNumbers(filename string) []int {
-	lines := file.ReadLines(filename)
+	lines := file.ReadFileLines(filename)
 	arr := make([]int, len(lines))
 	for i, l := range lines {
 		v, err := strconv.Atoi(l)

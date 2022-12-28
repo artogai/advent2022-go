@@ -160,7 +160,7 @@ func shortestPath(v1 valve, v2 valve, eds edges) int {
 func parseValves(filename string) (edges, rates) {
 	eds := make(edges)
 	rts := make(rates)
-	for _, line := range file.ReadLines(filename) {
+	for _, line := range file.ReadFileLines(filename) {
 		lineArr := strings.Split(line, "; ")
 		num, rate := parseValve(lineArr[0])
 		neighbours := parseNeighbours(lineArr[1])
