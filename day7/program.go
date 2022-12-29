@@ -9,7 +9,7 @@ import (
 func SizeDirs(filename string, atMostSize int) int {
 	cmds := cmd.Read(filename)
 	fs := buildFs(cmds)
-	dirs := fs.SubDirsRec()
+	dirs := fs.SubDirs()
 
 	size := 0
 	for _, dir := range dirs {
@@ -24,7 +24,7 @@ func SizeDirs(filename string, atMostSize int) int {
 func FindMinDeleteDirSize(filename string, maxFsSize int, updateSize int) int {
 	cmds := cmd.Read(filename)
 	fs := buildFs(cmds)
-	dirs := fs.SubDirsRec()
+	dirs := fs.SubDirs()
 	freeSize := maxFsSize - fs.Size()
 	requiredSize := updateSize - freeSize
 
@@ -52,7 +52,7 @@ func buildFs(cmds []cmd.Cmd) *fs.Directory {
 			case "..":
 				currDir = currDir.Parent()
 			default:
-				currDir = currDir.FindSubDir(ct.Path)
+				currDir = currDir.SubDir(ct.Path)
 			}
 		case cmd.Ls:
 			for _, entity := range ct.Content {

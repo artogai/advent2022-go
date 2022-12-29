@@ -2,16 +2,17 @@ package day8
 
 import (
 	"advent2022/file"
+	"advent2022/matrix"
 	"strconv"
 )
 
 func CountVisible(filename string) int {
 	heights := readHeights(filename)
-	visible := make2d[bool](len(heights))
+	visible := matrix.NewSquare[bool](heights.Size())
 
 	for i := 0; i < 4; i++ {
 		checkFromLeft(heights, visible, i)
-		rotate(heights)
+		heights.RotateAntiClockwise()
 	}
 
 	cnt := 0
@@ -26,13 +27,13 @@ func CountVisible(filename string) int {
 	return cnt
 }
 
-func FindMaxScore(filename string) int {
+func MaxScore(filename string) int {
 	heights := readHeights(filename)
-	scores := make2d[int](len(heights))
+	scores := matrix.NewSquare[int](heights.Size())
 
 	for i := 0; i < 4; i++ {
 		calcScoresFromLeft(heights, scores, i)
-		rotate(heights)
+		heights.RotateAntiClockwise()
 	}
 
 	maxScore := 0
@@ -47,8 +48,8 @@ func FindMaxScore(filename string) int {
 	return maxScore
 }
 
-func calcScoresFromLeft(heights [][]int, scores [][]int, rotationN int) {
-	n := len(heights)
+func calcScoresFromLeft(heights matrix.Square[int], scores matrix.Square[int], rotationN int) {
+	n := heights.Size()
 	for i, row := range heights {
 		for j, height := range row {
 			rI, rJ := restoreCoords(i, j, n, rotationN)
@@ -103,38 +104,17 @@ func restoreCoords(i, j, n int, rotationN int) (int, int) {
 	return rI, rJ
 }
 
-func readHeights(filename string) [][]int {
+func readHeights(filename string) matrix.Square[int] {
 	lines := file.ReadFileLines(filename)
-	heights := make([][]int, len(lines))
-
-	for i, line := range file.ReadFileLines(filename) {
-		heights[i] = make([]int, len(line))
+	heights := matrix.NewSquare[int](len(lines))
+	for i, line := range lines {
 		for j, str := range line {
-			height, _ := strconv.Atoi(string(str))
+			height, err := strconv.Atoi(string(str))
+			if err != nil {
+				panic(err)
+			}
 			heights[i][j] = height
 		}
 	}
 	return heights
-}
-
-// rotate matrix anti-clockwise O(n2)
-func rotate[A any](m [][]A) {
-	n := len(m)
-	for i := 0; i < n/2; i++ {
-		for j := i; j < n-i-1; j++ {
-			temp := m[i][j]
-			m[i][j] = m[j][n-1-i]
-			m[j][n-1-i] = m[n-1-i][n-1-j]
-			m[n-1-i][n-1-j] = m[n-1-j][i]
-			m[n-1-j][i] = temp
-		}
-	}
-}
-
-func make2d[A any](n int) [][]A {
-	newArr := make([][]A, n)
-	for i := range newArr {
-		newArr[i] = make([]A, n)
-	}
-	return newArr
 }

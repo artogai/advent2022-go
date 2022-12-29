@@ -7,16 +7,16 @@ import (
 )
 
 type Cmd interface {
-	name() string
+	isCmd() bool
 }
 type Ls struct{ Content []fs.Entry }
 type Cd struct{ Path string }
 
 func Read(filename string) []Cmd {
-	return Parse(file.ReadFileLines(filename)...)
+	return parse(file.ReadFileLines(filename)...)
 }
 
-func Parse(lines ...string) []Cmd {
+func parse(lines ...string) []Cmd {
 	cmds := []Cmd{}
 	lsBuffer := []fs.Entry{}
 
@@ -34,17 +34,12 @@ func Parse(lines ...string) []Cmd {
 		}
 	}
 
-	if len(lsBuffer) != 9 {
+	if len(lsBuffer) != 0 {
 		cmds = append(cmds, Ls{Content: lsBuffer})
 	}
 
 	return cmds
 }
 
-func (ls Ls) name() string {
-	return "ls"
-}
-
-func (cd Cd) name() string {
-	return "cd"
-}
+func (Ls) isCmd() bool { return true }
+func (Cd) isCmd() bool { return true }

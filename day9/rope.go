@@ -7,13 +7,42 @@ import (
 	"strings"
 )
 
+func CalcVisited(filename string, ropeSize int, fieldSize int) int {
+	visited := make([][]bool, fieldSize)
+	for i := range visited {
+		visited[i] = make([]bool, fieldSize)
+	}
+
+	pos := fieldSize / 2
+	dirs := readDirections(filename)
+	rope := newRope(pos, pos, ropeSize)
+
+	for _, dir := range dirs {
+		rope.traverse(dir, visited, nil)
+	}
+
+	return calcVisited(visited)
+}
+
+func calcVisited(visited [][]bool) int {
+	cnt := 0
+	for _, row := range visited {
+		for _, v := range row {
+			if v {
+				cnt += 1
+			}
+		}
+	}
+	return cnt
+}
+
 type direction int
 
 const (
-	Up    direction = iota
-	Down            = iota
-	Left            = iota
-	Right           = iota
+	up    direction = iota
+	down  direction = iota
+	left  direction = iota
+	right direction = iota
 )
 
 type knot struct{ x, y int }
@@ -41,13 +70,13 @@ func (r rope) traverse(dir direction, visited [][]bool, screen [][]rune) {
 func (r rope) move(dir direction) {
 	prevLead := r.knots[0]
 	switch dir {
-	case Up:
+	case up:
 		r.knots[0].x -= 1
-	case Down:
+	case down:
 		r.knots[0].x += 1
-	case Left:
+	case left:
 		r.knots[0].y -= 1
-	case Right:
+	case right:
 		r.knots[0].y += 1
 	}
 
@@ -225,12 +254,8 @@ func (r rope) len() int {
 }
 
 func readDirections(filename string) []direction {
-	return parseDirections(file.ReadFileLines(filename)...)
-}
-
-func parseDirections(strs ...string) []direction {
 	dirs := []direction{}
-	for _, s := range strs {
+	file.ParseFile(filename, func(s string) int {
 		arr := strings.Split(s, " ")
 		dir := parseDirection(arr[0])
 		n, err := strconv.Atoi(arr[1])
@@ -240,22 +265,23 @@ func parseDirections(strs ...string) []direction {
 		for i := 0; i < n; i++ {
 			dirs = append(dirs, dir)
 		}
-	}
+		return -1
+	})
 	return dirs
 }
 
 func parseDirection(s string) direction {
 	switch s {
 	case "U":
-		return Up
+		return up
 	case "D":
-		return Down
+		return down
 	case "L":
-		return Left
+		return left
 	case "R":
-		return Right
+		return right
 	}
-	panic(fmt.Sprintf("can't parse direction from %s", s))
+	panic(fmt.Sprintf("parseDirection: can't parse direction from %s", s))
 }
 
 const SCREEN_EMPTY_RUNE = '.'
@@ -270,18 +296,4 @@ func (r rope) clear(screen [][]rune) {
 	for _, knot := range r.knots {
 		screen[knot.x][knot.y] = SCREEN_EMPTY_RUNE
 	}
-}
-
-func (d direction) toString() string {
-	switch d {
-	case Up:
-		return "UP"
-	case Down:
-		return "DOWN"
-	case Left:
-		return "LEFT"
-	case Right:
-		return "RIGHT"
-	}
-	panic(fmt.Sprintf("unmatched direction %v", d))
 }

@@ -8,31 +8,28 @@ import (
 )
 
 func TakeCpuMeasurements(filename string, cycles []int) int {
-	measurements := make([]int, 0, len(cycles))
 	instructions := instruction.Read(filename)
+	measurements := make([]int, 0, len(cycles))
 	cpu(instructions, func(cycle, register int) {
-		if len(cycles) > 0 {
-			if cycle == cycles[0] {
-				cycles = cycles[1:]
-				measurements = append(measurements, cycle*register)
-			}
+		if len(cycles) > 0 && cycle == cycles[0] {
+			cycles = cycles[1:]
+			measurements = append(measurements, cycle*register)
 		}
 	})
 	return lo.Sum(measurements)
 }
 
-func DrawCRT(filename string) string {
-	resolution := 40
+func DrawCRT(filename string, resolution int) string {
 	instructions := instruction.Read(filename)
 	line := make([]rune, resolution)
-	clear(line, resolution)
+	clear(line)
 	var str strings.Builder
 
 	cpu(instructions, func(cycle, register int) {
 		if cycle != 1 && cycle%resolution == 1 {
 			str.WriteString(string(line))
 			str.WriteString("\n")
-			clear(line, resolution)
+			clear(line)
 		}
 		draw(line, cycle, register, resolution)
 	})
@@ -58,7 +55,7 @@ func cpu(insts []instruction.Instruction, onCycle func(cycle, register int)) {
 	onCycle(cycle, register)
 }
 
-func clear(line []rune, resolution int) {
+func clear(line []rune) {
 	for i := range line {
 		line[i] = '.'
 	}

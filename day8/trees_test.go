@@ -6,12 +6,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var (
+	sampleTrees = "trees_sample.txt"
+	trees       = "trees.txt"
+)
+
 func TestCountVisible(t *testing.T) {
-	require.Equal(t, 21, CountVisible("trees_sample.txt"))
-	require.Equal(t, 1818, CountVisible("trees.txt"))
+	require.Equal(t, 21, CountVisible(sampleTrees))
+	require.Equal(t, 1818, CountVisible(trees))
 }
 
 func TestFindMaxScore(t *testing.T) {
-	require.Equal(t, 8, FindMaxScore("trees_sample.txt"))
-	require.Equal(t, 368368, FindMaxScore("trees.txt"))
+	require.Equal(t, 8, MaxScore(sampleTrees))
+	require.Equal(t, 368368, MaxScore(trees))
 }

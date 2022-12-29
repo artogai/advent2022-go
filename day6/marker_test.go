@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var path = "signal.txt"
+
 func TestFindPacketMarkerPos(t *testing.T) {
 	l := 4
 	pos := FindMarkerPos("bvwbjplbgvbhsrlpgdmjqwftvncz", l)
@@ -21,7 +23,7 @@ func TestFindPacketMarkerPos(t *testing.T) {
 	pos = FindMarkerPos("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", l)
 	require.Equal(t, 11, pos)
 
-	str := file.ReadFile("signal.txt")
+	str := file.ReadFile(path)
 	pos = FindMarkerPos(str, l)
 	require.Equal(t, 1760, pos)
 }
@@ -43,7 +45,7 @@ func TestFindMessageMarkerPos(t *testing.T) {
 	pos = FindMarkerPos("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw", l)
 	require.Equal(t, 26, pos)
 
-	str := file.ReadFile("signal.txt")
+	str := file.ReadFile(path)
 	pos = FindMarkerPos(str, l)
 	require.Equal(t, 2974, pos)
 }

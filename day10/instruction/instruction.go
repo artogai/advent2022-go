@@ -4,20 +4,14 @@ import (
 	"advent2022/file"
 	"strconv"
 	"strings"
-
-	"github.com/samber/lo"
 )
 
-type Instruction interface {
-	name() string
-}
+type Instruction interface{ isInstruction() bool }
 type Noop struct{}
 type Addx struct{ Value int }
 
 func Read(filename string) []Instruction {
-	return lo.Map(file.ReadFileLines(filename), func(line string, _ int) Instruction {
-		return parse(line)
-	})
+	return file.ParseFile(filename, parse)
 }
 
 func parse(s string) Instruction {
@@ -33,10 +27,5 @@ func parse(s string) Instruction {
 	}
 }
 
-func (Noop) name() string {
-	return "noop"
-}
-
-func (Addx) name() string {
-	return "addx"
-}
+func (Noop) isInstruction() bool { return true }
+func (Addx) isInstruction() bool { return true }

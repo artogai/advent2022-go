@@ -1,5 +1,7 @@
 package day6
 
+import mapset "github.com/deckarep/golang-set/v2"
+
 func FindMarkerPos(signal string, windowSize int) int {
 	for i := 0; i < len(signal); i++ {
 		if i >= windowSize {
@@ -12,13 +14,10 @@ func FindMarkerPos(signal string, windowSize int) int {
 }
 
 func isUnique(s string) bool {
-	checked := make(map[rune]bool, len(s))
+	checked := mapset.NewThreadUnsafeSet[rune]()
 	for _, r := range s {
-		_, exists := checked[r]
-		if exists {
+		if added := checked.Add(r); !added {
 			return false
-		} else {
-			checked[r] = true
 		}
 	}
 	return true
